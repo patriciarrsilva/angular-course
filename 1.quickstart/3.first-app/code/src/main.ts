@@ -1,8 +1,9 @@
-import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
-import {NgModule}      from '@angular/core';
-import {BrowserModule} from '@angular/platform-browser';
-import {Component} from '@angular/core';
+import { Component, NgModule } from '@angular/core';
+/* Necessary to run the app in the browser */
+import { BrowserModule } from '@angular/platform-browser';
+import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 
+/* JokeComponent */
 @Component({
   selector: 'joke',
   template: `
@@ -10,15 +11,23 @@ import {Component} from '@angular/core';
     <p>Halloumi (Hello Me)</p>
   `
 })
+
 class JokeComponent {
 }
 
+/* Root Angular Module - every Angular app requires, at least, one module (this one).
+ * imports - other Angular modules that we need in this module
+ * declarations - components/directives of this module
+ * bootstrap - root component
+ */
 @NgModule({
   imports: [BrowserModule],
   declarations: [JokeComponent],
   bootstrap: [JokeComponent]
 })
+
 export class AppModule {
 }
 
+/* Bootstrap the application using the Root Angular Module */
 platformBrowserDynamic().bootstrapModule(AppModule);
