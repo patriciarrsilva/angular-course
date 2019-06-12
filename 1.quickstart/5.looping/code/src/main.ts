@@ -12,8 +12,8 @@ import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
   selector: 'joke-list',
   template: `
     <div class="card card-block" *ngFor="let joke of jokes">
-      <h4 class="card-title">{{joke.setup}}</h4>
-      <p class="card-text">{{joke.punchline}}</p>
+      <h4 class="card-title">{{ joke.setup }}</h4>
+      <p class="card-text">{{ joke.punchline }}</p>
     </div>
   `
 })
