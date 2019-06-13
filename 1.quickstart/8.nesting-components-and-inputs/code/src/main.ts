@@ -54,13 +54,12 @@ class JokeComponent {
   @Input('joke') data: Joke;
 }
 
-
 /* JokeListComponent */
 /* holds a list of JokeComponents (ngFor)
  *
  * *ngFor="let <name-i-want-to-call-each-item> of <array-property-on-component>"
  * {{let <name-i-called-each-item>.<item property>}}
- * 
+ *
  * as we bound to the hidden property of the p tag (to ".hide"), we want to bind to the joke property of the JokeComponent (to "j")
  * like this: [joke]="j" (now, the JokeComponent has a "joke" property)
  * but this is not enough - we need to explicitly mark it as an Input property on the JokeComponent (with @Input
@@ -80,16 +79,16 @@ class JokeListComponent {
   // (the recommended approach with initialising a component is to use Component Lifecycle Hooks)
   constructor() {
     this.jokes = [
-      new Joke("What did the cheese say when it looked in the mirror?", "Hello-me (Halloumi)"),
-      new Joke("What kind of cheese do you use to disguise a small horse?", "Mask-a-pony (Mascarpone)"),
-      new Joke("A kid threw a lump of cheddar at me", "I thought ‘That’s not very mature’"),
+      new Joke('What did the cheese say when it looked in the mirror?', 'Hello-me (Halloumi)'),
+      new Joke('What kind of cheese do you use to disguise a small horse?', 'Mask-a-pony (Mascarpone)'),
+      new Joke('A kid threw a lump of cheddar at me', 'I thought ‘That’s not very mature’'),
     ];
   }
 }
 
 /* AppComponent
- * root component - no functionality (container to hold other components) 
- * holds the JokeListComponent 
+ * root component - no functionality (container to hold other components)
+ * holds the JokeListComponent
  */
 @Component({
   selector: 'app',

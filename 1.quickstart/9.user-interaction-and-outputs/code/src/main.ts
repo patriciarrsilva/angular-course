@@ -1,20 +1,15 @@
-import { platformBrowserDynamic } from "@angular/platform-browser-dynamic";
-import {
-  Component,
-  NgModule,
-  Input,
-  Output,
-  EventEmitter
-  // @ts-ignore
-} from "@angular/core";
-// @ts-ignore
-import { BrowserModule } from "@angular/platform-browser";
+import { Component, EventEmitter, Input, NgModule, Output } from '@angular/core';
+/* Necessary to run the app in the browser */
+import { BrowserModule } from '@angular/platform-browser';
+import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 
+/* Domain Model: class to store data and functions (represents a single joke) */
 class Joke {
   public setup: string;
   public punchline: string;
   public hide: boolean;
 
+  // initialises the properties of the Joke instance from the arguments passed into the constructor
   constructor(setup: string, punchline: string) {
     this.setup = setup;
     this.punchline = punchline;
@@ -26,30 +21,42 @@ class Joke {
   }
 }
 
+/* JokeFormComponent */
+/* call the createJoke() function when the user clicks the "Create" button
+ * template reference variable: #setup -> tells Angular to bind <input> to the variable setup
+ *  "setup" is only available as a variable in the template (we don’t see "setup" inside the javascript code)
+ *  "setup" points to the DOM element that represents <input> (HTMLInputElement)
+ *  to get the value we call "setup.value"
+ */
 @Component({
-  selector: "joke-form",
+  selector: 'joke-form',
   template: `
-<div class="card card-block">
-  <h4 class="card-title">Create Joke</h4>
-  <div class="form-group">
-    <input type="text"
-           class="form-control"
-           placeholder="Enter the setup"
-           #setup>
-  </div>
-  <div class="form-group">
-    <input type="text"
-           class="form-control"
-           placeholder="Enter the punchline"
-           #punchline>
-  </div>
-  <button type="button"
-          class="btn btn-primary"
-          (click)="createJoke(setup.value, punchline.value)">Create
-  </button>
-</div>
+    <div class="card card-block">
+      <h4 class="card-title">Create Joke</h4>
+      <div class="form-group">
+        <label for="setup">Setup</label>
+        <input id="setup" type="text" class="form-control" placeholder="Enter the setup" #setup>
+      </div>
+      <div class="form-group">
+        <label for="punchline">Punchline</label>
+        <input id="punchline" type="text" class="form-control" placeholder="Enter the punchline" #punchline>
+      </div>
+      <button type="button" class="btn btn-primary" (click)="createJoke(setup.value, punchline.value)">
+        Create
+      </button>
+    </div>
   `
 })
+
+/*
+ * @Output are always instances of the EventEmitter
+ *EventEmitter property on the JokeFormComponent class
+ *  is a helper class to emit events when something happens; other components can bind and react to these events
+ * <Joke> is the type that will be output by this property (TypeScript generics)
+ */
+/*
+ * What we pass to the .emit() function will be output by the "jokeCreated" property (as $event)
+ */
 class JokeFormComponent {
   @Output() jokeCreated = new EventEmitter<Joke>();
 
@@ -58,63 +65,106 @@ class JokeFormComponent {
   }
 }
 
+/* JokeComponent */
+/*
+ * Input Property Binding: [hidden]="<javascript-code>"
+ *  we bind the value to the DOM property `hidden`/we bind to the input of the element/component - p tag here
+ *  changes the value of the target
+ *
+ * Output Event Binding: (event-we-want-to-listen)="<javascript-called-every-click>"
+ *  we bind to the output of the element/component
+ *  notifies when the target’s value changes
+ */
 @Component({
-  selector: "joke",
+  selector: 'joke',
   template: `
-<div class="card card-block">
-  <h4 class="card-title">{{data.setup}}</h4>
-  <p class="card-text"
-     [hidden]="data.hide">{{data.punchline}}</p>
-  <a (click)="data.toggle()"
-     class="btn btn-warning">Tell Me
-  </a>
-</div>
+    <div class="card card-block">
+      <h4 class="card-title">{{ data.setup }}</h4>
+      <p class="card-text" [hidden]="data.hide">{{ data.punchline }}</p>
+      <a (click)="data.toggle()" class="btn btn-warning">Tell Me</a>
+    </div>
   `
 })
+
 class JokeComponent {
-  @Input("joke") data: Joke;
+  /*
+   * @Input tells Angular that the "joke" property is an input property and we can bind to it using []
+   * This @Input becomes part of the public interface of the component
+   */
+  /*
+  * The @Input takes a parameter -> the name of the input property to the outside world
+  * this way we can change the property name without changing all the input property bindings
+  */
+  @Input('joke') data: Joke;
 }
 
+/* JokeListComponent */
+/*
+ * holds the JokeFormComponent (the parent component just wants to know when the user has created a new joke)
+ *  the JokeFormComponent makes available an output event binding called "jokeCreated"
+ *  this calls the "addJoke" function when the "jokeCreated" property outputs an event
+ * $event is a special variable that holds what was emitted by the jokeCreated EventEmitter (an instance of a Joke)
+ */
+/* holds a list of JokeComponents (ngFor)
+ *
+ * *ngFor="let <name-i-want-to-call-each-item> of <array-property-on-component>"
+ * {{let <name-i-called-each-item>.<item property>}}
+ *
+ * as we bound to the hidden property of the p tag (to ".hide"), we want to bind to the joke property of the JokeComponent (to "j")
+ * like this: [joke]="j" (now, the JokeComponent has a "joke" property)
+ * but this is not enough - we need to explicitly mark it as an Input property on the JokeComponent (with @Input
+ */
 @Component({
-  selector: "joke-list",
+  selector: 'joke-list',
   template: `
-<joke-form (jokeCreated)="addJoke($event)"></joke-form>
-<joke *ngFor="let j of jokes" [joke]="j"></joke>
+    <joke-form (jokeCreated)="addJoke($event)"></joke-form>
+    <joke *ngFor="let j of jokes" [joke]="j"></joke>
   `
 })
-class JokeListComponent {
-  jokes: Joke[];
 
+class JokeListComponent {
+  // property of the class -> list of jokes
+  jokes: Joke[]; // list of/array of Joke's (instance of the Joke class)
+
+  // when we instantiate the class, the constructor function is called and initialises the properties
+  // (the recommended approach with initialising a component is to use Component Lifecycle Hooks)
   constructor() {
     this.jokes = [
-      new Joke(
-        "What did the cheese say when it looked in the mirror?",
-        "Hello-me (Halloumi)"
-      ),
-      new Joke(
-        "What kind of cheese do you use to disguise a small horse?",
-        "Mask-a-pony (Mascarpone)"
-      ),
-      new Joke(
-        "A kid threw a lump of cheddar at me",
-        "I thought ‘That’s not very mature’"
-      )
+      new Joke('What did the cheese say when it looked in the mirror?', 'Hello-me (Halloumi)'),
+      new Joke('What kind of cheese do you use to disguise a small horse?', 'Mask-a-pony (Mascarpone)'),
+      new Joke('A kid threw a lump of cheddar at me', 'I thought ‘That’s not very mature’')
     ];
   }
 
+  /* bind to the output event property
+   * the event emited by the <joke-form> is a "joke"
+   * the addJoke function adds the "joke" that got output to the front of this array of jokes
+   * Angular detects that this array changed and updates the view
+   */
   addJoke(joke: any) {
     this.jokes.unshift(joke);
   }
 }
 
+/* AppComponent
+ * root component - no functionality (container to hold other components)
+ * holds the JokeListComponent
+ */
 @Component({
-  selector: "app",
+  selector: 'app',
   template: `
-<joke-list></joke-list>
+    <joke-list></joke-list>
   `
 })
-class AppComponent {}
 
+class AppComponent {
+}
+
+/* Root Angular Module - every Angular app requires, at least, one module (this one).
+ * imports - other Angular modules that we need in this module
+ * declarations - components/directives of this module
+ * bootstrap - root component
+ */
 @NgModule({
   imports: [BrowserModule],
   declarations: [
@@ -125,6 +175,9 @@ class AppComponent {}
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule {}
 
+export class AppModule {
+}
+
+/* Bootstrap the application using the Root Angular Module */
 platformBrowserDynamic().bootstrapModule(AppModule);
