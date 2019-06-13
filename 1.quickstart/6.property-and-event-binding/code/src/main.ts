@@ -6,7 +6,7 @@ import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 /* JokeListComponent */
 /*
  * *ngFor="let <name-i-want-to-call-each-item> of <array-property-on-component>"
- * {{let <name-i-called-each-item>.<item property>}}
+ * {{ <name-i-called-each-item>.<item property> }}
  *
  * Input Property Binding: [hidden]="<javascript-code>"
  *  we bind the value to the DOM property `hidden`/we bind to the input of the element/component - p tag here
